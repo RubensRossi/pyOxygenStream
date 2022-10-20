@@ -12,7 +12,9 @@ A valid license must be installed on OXYGEN instance. Otherwise, the stream may 
 `cd pyOxygenStream`
 
 3. Install \
-`python3 setup.py install`
+`python setup.py install`
+or
+`python -m pip install .`
 
 # Example usage
 
