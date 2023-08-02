@@ -11,11 +11,15 @@ import pyOxygenStream
 #%%
 # Measurement Device IP Settings
 ip_addr = '127.0.0.1'
+ip_addr = '172.21.48.1'
 scpi_port = 10001
 stream_port = 10005
+timeout = 20
 
 # Connect to Measurement Device and setup data stream
-measurementDevice = pyOxygenSCPI.OxygenSCPI(ip_addr, scpi_port)
+print("starting the SCPI")
+measurementDevice = pyOxygenSCPI.OxygenSCPI(ip_addr, scpi_port, timeout)
+print("connecting to the Oxygen")
 if not measurementDevice.connect():
     sys.exit()
 print(f"Connected via SCPI to {ip_addr:s}:{scpi_port:d}")
@@ -42,7 +46,7 @@ print("Stream Started!")
 
 start_time = time.time()
 # Set Time to Stream here in Seconds
-time_to_stream = 10
+time_to_stream = 100
 
 last_logged_time = start_time
 pkg_count = 0
@@ -54,7 +58,10 @@ while time.time() < (start_time + time_to_stream):
         data_pkg = dt_stream.readPacket()
     except:
         print("Error Reading Data:", sys.exc_info())
-        print("Stream State:", measurementDevice.DataStream.getState())
+        try:
+            print("Stream State:", measurementDevice.DataStream.getState()) # TODO terminate this function after 2 seconds
+        except:
+            sys.exit("Aborted due to error")
         sys.exit("Aborted due to error")
     # Non-Empty Data Packet - unpack data for each channel
     if data_pkg:
