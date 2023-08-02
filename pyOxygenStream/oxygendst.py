@@ -290,8 +290,8 @@ class OxygenStreamReceiver:
          sub_packet.timestamp,
          sub_packet.timebase_frequency) = self.struct_sync_fixed.unpack_from(packet, pos)
         data = self.readSamples(packet, sub_packet, pos, SBT_SYNC_FIXED)
-        timeStamps = np.arange(sub_packet.timestamp, sub_packet.timestamp+sub_packet.number_samples)/sub_packet.timebase_frequency
-        data = np.c_[timeStamps, data]
+ #       timeStamps = np.arange(sub_packet.timestamp, sub_packet.timestamp+sub_packet.number_samples)/sub_packet.timebase_frequency
+ #       data = np.c_[timeStamps, data]
         self.channelValue.append(data)
         logging.debug("DtChannelSyncFixed:")
         logging.debug("  channel idx:         {:d}".format(self.actual_channel_idx))
@@ -312,9 +312,9 @@ class OxygenStreamReceiver:
          sub_packet.number_samples,
          sub_packet.timebase_frequency) = self.struct_async_fixed.unpack_from(packet, pos)
         data = self.readSamples(packet, sub_packet, pos, SBT_ASYNC_FIXED)
-        if data.size > 0:
-            timeStamps = data['f0']/sub_packet.timebase_frequency
-            data = np.c_[timeStamps, data['f1']]
+#        if data.size > 0:
+#            timeStamps = data['f0']/sub_packet.timebase_frequency
+#            data = np.c_[timeStamps, data['f1']]
         self.channelValue.append(data)
         logging.debug("DtChannelAsyncFixed:")
         logging.debug("  channel idx:         {:d}".format(self.actual_channel_idx))
