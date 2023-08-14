@@ -220,8 +220,9 @@ class OxygenStreamReceiver:
             logging.error("Could not read all packet data")
             return False
         self.channelValue = []
+        self.timeStamp    = []
         self.processPacket(packet_data)
-        return self.channelValue
+        return self.channelValue, self.timeStamp
 
     def processPacket(self, packet):
         """ Read and unpack packet content according to subpacket types
@@ -293,6 +294,8 @@ class OxygenStreamReceiver:
  #       timeStamps = np.arange(sub_packet.timestamp, sub_packet.timestamp+sub_packet.number_samples)/sub_packet.timebase_frequency
  #       data = np.c_[timeStamps, data]
         self.channelValue.append(data)
+        self.timeStamp.append(sub_packet.timestamp)
+
         logging.debug("DtChannelSyncFixed:")
         logging.debug("  channel idx:         {:d}".format(self.actual_channel_idx))
         logging.debug("  channel_data_type:   {:d}".format(sub_packet.channel_data_type))
@@ -356,10 +359,12 @@ class OxygenStreamReceiver:
         if sample_type == 'int24':
             data = np.frombuffer(packet, dtype="uint8",  offset=pos+DT_SYNC_FIXED_SIZE, count=num_samples*3)
             data = data[2::3].astype('int8')*2**16+data[1::3]*2**8+data[::3]
+            return data.astype('float32') * f + o
         
         elif sample_type == 'uint24':
             data = np.frombuffer(packet, dtype="uint8",  offset=pos+DT_SYNC_FIXED_SIZE, count=num_samples*3)
             data = data[2::3]*2**16+data[1::3]*2**8+data[::3]
+            return data.astype('float32') * f + o
 
         else:
             data = np.frombuffer(packet, dtype=sample_type, offset=pos+DT_SYNC_FIXED_SIZE, count=num_samples)
