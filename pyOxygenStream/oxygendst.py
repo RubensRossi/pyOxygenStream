@@ -56,10 +56,11 @@ DT_DATA_TYPE = {
     9:  "uint64",
     10: "float32",
     11: "float64",
-    12: "complex64",
-    13: "complex128",
-    14: False,
-    15: False
+    12: "complex64", # complex 32
+    13: "complex128", # complex 64
+    14: False, # string, variable
+    15: False, # binary, variable
+    16: False, # CAN (64?) variable (5 bytes ID + 4 bytes sample size + message)
 }
 
 def recvFixedSize(s, size):
@@ -368,6 +369,13 @@ class OxygenStreamReceiver:
 
         else:
             data = np.frombuffer(packet, dtype=sample_type, offset=pos+DT_SYNC_FIXED_SIZE, count=num_samples)
+
+        # if sample_type.endswith('int8') || sample_type.endswith('int16') || sample_type == 'int16':
+        #     return data.astype('int32') * f + o
+        # elif sample_type == 'uint32' || sample_type == 'int64':
+        #     return data.astype('int64') * f + o
+        # elif sample_type == 'uint64'
+        #     return data.astype('uint64') * f + o
 
         return data.astype('float64') * f + o
 
